@@ -1,7 +1,24 @@
-import CountrySelectBox from "./components/CountrySelectBox";
+import CurrencySelectBox from "./components/CurrencySelectBox";
 import AmountInputBox from "./components/AmountInputBox";
+import { useState } from "react";
+import useCurrencyInfo from "./hooks/useCurrencyInfo";
 
 function App() {
+
+  const [amount, setAmount] = useState("")
+  const [from, setFrom] = useState("npr");
+  const [to, setTo] = useState("usd");
+  const [convertedAmount, setConvertedAmount] = useState("0.0")
+
+  const currencyInfo = useCurrencyInfo(from);
+
+  const currencyKeys = Object.keys(currencyInfo);
+
+  const convert = () => {
+    setConvertedAmount(amount * currencyInfo[to]);
+  }
+  
+
   return (
     <div
       className="w-full h-screen bg-cover flex flex-col items-center gap-10"
@@ -14,22 +31,41 @@ function App() {
       </h1>
 
       <div className="w-80">
-        <form className="flex flex-col gap-6">
+        <form 
+          className="flex flex-col gap-6"
+          onSubmit={(e) => {
+            e.preventDefault();
+            convert();
+          }}
+        >
           <div>
-            <AmountInputBox />
+            <AmountInputBox
+              amount={amount}
+              onAmountChange={(amount) => setAmount(amount)}
+            />
           </div>
 
           <div>
-            <CountrySelectBox label="From" />
+            <CurrencySelectBox 
+            label="From" 
+            selectCurrency = {from}
+            currencyOption={currencyKeys}
+            onCurrencyChange={(amount) => setFrom(amount)}
+            />
           </div>
 
           <div>
-            <CountrySelectBox label="To" />
+            <CurrencySelectBox 
+            label="To" 
+            selectCurrency = {to}
+            currencyOption={currencyKeys}
+            onCurrencyChange={(amount) => setTo(amount)}
+            />
           </div>
 
           <div className="text-center">
-              <p className="text-xs">Exchange rate</p>
-              <h1 className="text-4xl font-bold text-blue-600">0.0</h1>
+            <p className="text-xs">Exchange rate</p>
+            <h1 className="text-4xl font-bold text-blue-600">{convertedAmount}</h1>
           </div>
 
           <div className="flex self-center bg-blue-600 py-2 px-8 text-white rounded-md">
